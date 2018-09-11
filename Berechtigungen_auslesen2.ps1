@@ -16,7 +16,7 @@ $csvexport = Read-Host 'type in the path for the csv. when you type nothing it w
         $csvexport = "C:\exportpremission.csv"
     }
 
-$FolderPath = dir -Directory -Path "$folder" -Recurse -Force
+$FolderPath = dir -Directory -Path "$folder" -Recurse -Force -ErrorAction SilentlyContinue
 $Report = @()
 Foreach ($Folder in $FolderPath) {
     $Acl = Get-Acl -Path $Folder.FullName
@@ -26,9 +26,10 @@ Foreach ($Folder in $FolderPath) {
 Group'=$Access.IdentityReference;'Permissions'=$Access.FileSystemRights;'Inherited'=$Access.IsInherited}
             $Report += New-Object -TypeName PSObject -Property $Properties
 
-        }
+                   }
 }
 
 $Report | Export-Csv -path "$csvexport"  -NoTypeInformation
 
 
+ #C:\Users\fnowarre\Documents
