@@ -1,35 +1,32 @@
 
 Function folder() {
-    $folder = Read-Host 'type in the folderpath for example D:\Share\' 
+    $folder = Read-Host 'Type-in the folderpath for example D:\Share\' 
 
     Return $folder
 }
 
-    $folder = folder 
+$folder = folder 
 
-    While($folder.length -eq 0){Write-Host $folder.length
-                $folder = folder}
+While($folder.length -eq 0) {
+    Write-Host $folder.length
+    $folder = folder
+}
 
-$csvexport = Read-Host 'type in the path for the csv. when you type nothing it will be C:\exportpremission.csv' 
+$csvexport = Read-Host 'Type-in the path for the csv. when you type nothing it will show on the screen' 
 
-    If($csvexport.length -eq 0) {
-        $csvexport = "C:\exportpremission.csv"
-    }
 
 $FolderPath = dir -Directory -Path "$folder" -Recurse -Force -ErrorAction SilentlyContinue
 $Report = @()
 Foreach ($Folder in $FolderPath) {
     $Acl = Get-Acl -Path $Folder.FullName
-    foreach ($Access in $acl.Access)
-        {
-            $Properties = [ordered]@{'Folder'=$Folder.FullName;'AD
-Group'=$Access.IdentityReference;'Permissions'=$Access.FileSystemRights;'Inherited'=$Access.IsInherited}
-            $Report += New-Object -TypeName PSObject -Property $Properties
-
-                   }
+    foreach ($Access in $acl.Access) {
+        $Properties = [ordered]@{'Folder' = $Folder.FullName;'AD Group' = $Access.IdentityReference;'Permissions' = $Access.FileSystemRights;'Inherited' = $Access.IsInherited}
+        $Report += New-Object -TypeName PSObject -Property $Properties
+    }
 }
 
-$Report | Export-Csv -path "$csvexport"  -NoTypeInformation
-
-
- #C:\Users\fnowarre\Documents
+If($csvexport.length -eq 0) {
+    $Report | Format-Table -autosize 
+} Else {
+    $Report | Export-Csv -path "$csvexport" -NoTypeInformation 
+}
